@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT">
+  <meta name="keywords" content="iOS底层原理,">
 
 
 
@@ -79,16 +79,18 @@
 
 
 
-<meta name="description" content="iOS Objective-C Swift 架构 模块">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Danxl的技术博客">
-<meta property="og:url" content="http://yoursite.com/index.html">
+<meta name="description" content="Category作用Category又叫分类，能够在不改变原有类的基础上为类增加一些方法。我们日常开发中经常会用到Category这个特性，那么Objective-C又是如何实现的呢？ 首先我们来看Category使用的一些特点：  只能增加方法，不能增加成员变量 分类方法可以访问原有类的成员变量 分类可以实现原有类的方法，但是会覆盖原有类方法（并不是真正覆盖，而是分类的方法实现被优先调用了）">
+<meta name="keywords" content="iOS底层原理">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS底层原理 - Category">
+<meta property="og:url" content="http://yoursite.com/2019/04/05/deep-in-category/index.html">
 <meta property="og:site_name" content="Danxl的技术博客">
-<meta property="og:description" content="iOS Objective-C Swift 架构 模块">
+<meta property="og:description" content="Category作用Category又叫分类，能够在不改变原有类的基础上为类增加一些方法。我们日常开发中经常会用到Category这个特性，那么Objective-C又是如何实现的呢？ 首先我们来看Category使用的一些特点：  只能增加方法，不能增加成员变量 分类方法可以访问原有类的成员变量 分类可以实现原有类的方法，但是会覆盖原有类方法（并不是真正覆盖，而是分类的方法实现被优先调用了）">
 <meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-04-11T10:31:40.224Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Danxl的技术博客">
-<meta name="twitter:description" content="iOS Objective-C Swift 架构 模块">
+<meta name="twitter:title" content="iOS底层原理 - Category">
+<meta name="twitter:description" content="Category作用Category又叫分类，能够在不改变原有类的基础上为类增加一些方法。我们日常开发中经常会用到Category这个特性，那么Objective-C又是如何实现的呢？ 首先我们来看Category使用的一些特点：  只能增加方法，不能增加成员变量 分类方法可以访问原有类的成员变量 分类可以实现原有类的方法，但是会覆盖原有类方法（并不是真正覆盖，而是分类的方法实现被优先调用了）">
 
 
 
@@ -118,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/">
+  <link rel="canonical" href="http://yoursite.com/2019/04/05/deep-in-category/">
 
 
 
 
 
-  <title>Danxl的技术博客</title>
+  <title>iOS底层原理 - Category | Danxl的技术博客</title>
   
 
 
@@ -143,8 +145,7 @@
     
   
 
-  <div class="container sidebar-position-left 
-  page-home">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -217,9 +218,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
 
@@ -249,9 +250,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/04/05/deep-in-category/" itemprop="url">iOS底层原理 - Category</a></h1>
+          <h1 class="post-title" itemprop="name headline">iOS底层原理 - Category</h1>
         
 
         <div class="post-meta">
@@ -301,9 +300,7 @@
       
 
       
-        
-          
-            <h3 id="Category作用"><a href="#Category作用" class="headerlink" title="Category作用"></a>Category作用</h3><p>Category又叫分类，能够在不改变原有类的基础上为类增加一些方法。我们日常开发中经常会用到Category这个特性，那么Objective-C又是如何实现的呢？</p>
+        <h3 id="Category作用"><a href="#Category作用" class="headerlink" title="Category作用"></a>Category作用</h3><p>Category又叫分类，能够在不改变原有类的基础上为类增加一些方法。我们日常开发中经常会用到Category这个特性，那么Objective-C又是如何实现的呢？</p>
 <p>首先我们来看Category使用的一些特点：</p>
 <ol>
 <li>只能增加方法，不能增加成员变量</li>
@@ -323,8 +320,6 @@
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">attachLists</span><span class="params">(List* <span class="keyword">const</span> * addedLists, <span class="keyword">uint32_t</span> addedCount)</span> </span>&#123;</span><br><span class="line"> <span class="keyword">if</span> (hasArray()) &#123;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">//旧的方法列表的长度</span></span><br><span class="line">        <span class="keyword">uint32_t</span> oldCount = <span class="built_in">array</span>()-&gt;count;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">//新的方法列表的长度</span></span><br><span class="line">        <span class="keyword">uint32_t</span> newCount = oldCount + addedCount;</span><br><span class="line">        </span><br><span class="line">        setArray((<span class="keyword">array_t</span> *)<span class="built_in">realloc</span>(<span class="built_in">array</span>(), <span class="keyword">array_t</span>::byteSize(newCount)));</span><br><span class="line">        <span class="built_in">array</span>()-&gt;count = newCount;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">//从addedCount的偏移量添加旧的方法列表</span></span><br><span class="line">        memmove(<span class="built_in">array</span>()-&gt;lists + addedCount, <span class="built_in">array</span>()-&gt;lists, </span><br><span class="line">                oldCount * <span class="keyword">sizeof</span>(<span class="built_in">array</span>()-&gt;lists[<span class="number">0</span>]));</span><br><span class="line">        <span class="comment">//从开始添加新方法列表</span></span><br><span class="line">        <span class="built_in">memcpy</span>(<span class="built_in">array</span>()-&gt;lists, addedLists, </span><br><span class="line">               addedCount * <span class="keyword">sizeof</span>(<span class="built_in">array</span>()-&gt;lists[<span class="number">0</span>]));</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这也说明了同名的方法其实是添加到了原来列表的前面，而不是覆盖。</p>
 
-          
-        
       
     </div>
     
@@ -339,148 +334,36 @@
 
     <footer class="post-footer">
       
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/05/deep-in-associate/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Daniel Li">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Danxl的技术博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/04/05/deep-in-associate/" itemprop="url">iOS底层原理 - Associate</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-04-05T14:54:16+08:00">
-                2019-04-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
+        <div class="post-tags">
           
-
+            <a href="/tags/iOS底层原理/" rel="tag"># iOS底层原理</a>
           
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
         </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="动态给类添加属性"><a href="#动态给类添加属性" class="headerlink" title="动态给类添加属性"></a>动态给类添加属性</h3><p>我们知道，通过Category可以给类在运行时添加方法，但是添加属性不会动态添加实例变量，只有set get声明并没有自动实现。解决方法就是利用Associate（关联）的方式动态添加属性和属性的相关方法：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">-(void)setName:(NSString *)name &#123;</span><br><span class="line">    // objc_setAssociatedObject(id object, const void *key, id value, objc_AssociationPolicy policy);</span><br><span class="line">    objc_setAssociatedObject(self, @&quot;name&quot;,name, OBJC_ASSOCIATION_RETAIN_NONATOMIC);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">-(NSString *)name &#123;</span><br><span class="line">    return objc_getAssociatedObject(self, @&quot;name&quot;);    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><em>policy</em>是一个枚举，表示属性的保存策略：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">typedef OBJC_ENUM(uintptr_t, objc_AssociationPolicy) &#123;</span><br><span class="line">    OBJC_ASSOCIATION_ASSIGN = 0,  // 指定一个弱引用相关联的对象</span><br><span class="line">    OBJC_ASSOCIATION_RETAIN_NONATOMIC = 1, // 指定相关对象的强引用，非原子性</span><br><span class="line">    OBJC_ASSOCIATION_COPY_NONATOMIC = 3,  // 指定相关的对象被复制，非原子性</span><br><span class="line">    OBJC_ASSOCIATION_RETAIN = 01401,  // 指定相关对象的强引用，原子性</span><br><span class="line">    OBJC_ASSOCIATION_COPY = 01403     // 指定相关的对象被复制，原子性   </span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>可以发现并没有正常属性关键字的<em>weak</em>，具体原因还需从关联的底层原理探究起。</p>
-<h3 id="关联的底层实现"><a href="#关联的底层实现" class="headerlink" title="关联的底层实现"></a>关联的底层实现</h3><p>在runtime源码中可以找到<code>objc_setAssociatedObject</code>函数：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">objc_setAssociatedObject</span><span class="params">(id object, <span class="keyword">const</span> <span class="keyword">void</span> *key, id value, objc_AssociationPolicy policy)</span> </span>&#123;</span><br><span class="line">    _object_set_associative_reference(object, (<span class="keyword">void</span> *)key, value, policy);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>可以看到又是通过调用<code>_object_set_associative_reference</code>来实现的：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> _object_set_associative_reference(id object, <span class="keyword">void</span> *key, id value, <span class="keyword">uintptr_t</span> policy) &#123;</span><br><span class="line">    <span class="function">ObjcAssociation <span class="title">old_association</span><span class="params">(<span class="number">0</span>, nil)</span></span>;</span><br><span class="line">    id new_value = value ? acquireValue(value, policy) : nil;</span><br><span class="line">    &#123;</span><br><span class="line">        AssociationsManager manager;</span><br><span class="line">        <span class="function">AssociationsHashMap &amp;<span class="title">associations</span><span class="params">(manager.associations())</span></span>;</span><br><span class="line">        <span class="keyword">disguised_ptr_t</span> disguised_object = DISGUISE(object);</span><br><span class="line">        <span class="keyword">if</span> (new_value) &#123;</span><br><span class="line">            <span class="comment">// break any existing association</span></span><br><span class="line">            AssociationsHashMap::iterator i = associations.find(disguised_object);</span><br><span class="line">            <span class="keyword">if</span> (i != associations.end()) &#123;</span><br><span class="line">                <span class="comment">// secondary table exists</span></span><br><span class="line">                ObjectAssociationMap *refs = i-&gt;second;</span><br><span class="line">                ObjectAssociationMap::iterator j = refs-&gt;find(key);</span><br><span class="line">                <span class="keyword">if</span> (j != refs-&gt;end()) &#123;</span><br><span class="line">                    old_association = j-&gt;second;</span><br><span class="line">                    j-&gt;second = ObjcAssociation(policy, new_value);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                (*refs)[key] = ObjcAssociation(policy, new_value)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// create the new association (first time)</span></span><br><span class="line">            ObjectAssociationMap *refs = <span class="keyword">new</span> ObjectAssociationMap;</span><br><span class="line">            associations[disguised_object] = refs;</span><br><span class="line">            (*refs)[key] = ObjectAssociation(policy, new_value);</span><br><span class="line">            object-&gt;setHaAssociatedObjects();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// setting the association to nil breaks the association.</span></span><br><span class="line">        AssociationsHashMap::iterator i = associations.find(disguised_object);</span><br><span class="line">        <span class="keyword">if</span> (i != associations.end()) &#123;</span><br><span class="line">            ObjectAssociationMap *refs = i-&gt;second;</span><br><span class="line">            ObjectAssociationMap::iterator j = refs-&gt;find(key);</span><br><span class="line">            <span class="keyword">if</span> (j != refs-&gt;end()) &#123;</span><br><span class="line">                old_association = j-&gt;second;</span><br><span class="line">                refs-&gt;erase(j);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// release the old value(outside the lock)</span></span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>代码解读：当设置关联的时候，会在<code>AssociationsManager</code>这个全局实例里找到<code>AssociationsHashMap</code>这个变量，这个hashmap保存了<code>object</code> -&gt; <code>ObjectAssociationMap</code>的映射，<code>ObjectAssociationMap</code>又存储着<code>key</code> -&gt; <code>ObjcAssociation</code>的映射，<code>ObjcAssociation</code>结构如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">class ObjcAssociation &#123;</span><br><span class="line">    uintptr_t _policy; // 策略</span><br><span class="line">    id _value; // 值</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>所以简单来讲，关联其实是一个全局哈希表，<code>key</code>为对象（通过<code>DUIGUISE(object)做了位运算</code>），<code>value</code>为另一个哈希表；<code>value</code>的哈希表中，<code>key</code>为传入的key，<code>value</code>为保存着policy和value的结构体。</p>
-<h3 id="为什么policy没有weak"><a href="#为什么policy没有weak" class="headerlink" title="为什么policy没有weak"></a>为什么policy没有weak</h3><p>网上有种解释是说因为<code>object</code>地址被置为了nil，会造成坏地址访问而无法根据<code>object</code>对象地址转化成<code>disguised_object</code>。我不是特别认同，当weak指针修饰的对象被销毁后，weak指针会置为nil，但是这里并不是<code>object</code>被置为nil。</p>
-<p>我的理解是应该<code>ObjcAssociation</code>中的<code>value</code>置为nil即可，至于为什么policy里没有weak，我想应该是在这个value所指的对象被销毁时，没有高效的办法在<code>AssociationsHashMap</code>找到这个<code>value</code>指针并把它置为nil（因为weak原理是通过全局的弱引用表查找的，这里的<code>value</code>并不会存入弱引用表）。</p>
-<p>以上是我个人的见解，如有错误还请指出，谢谢。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
       
 
       
       
-        <div class="post-eof"></div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/05/deep-in-associate/" rel="next" title="iOS底层原理 - Associate">
+                <i class="fa fa-chevron-left"></i> iOS底层原理 - Associate
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
       
     </footer>
   </div>
@@ -490,10 +373,11 @@
   </article>
 
 
-    
-  </section>
 
-  
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -501,6 +385,10 @@
 
 
           
+
+  
+
+
 
         </div>
         
@@ -521,8 +409,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -573,6 +470,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Category作用"><span class="nav-number">1.</span> <span class="nav-text">Category作用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Category结构"><span class="nav-number">2.</span> <span class="nav-text">Category结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Objective-C如何实现Category的"><span class="nav-number">3.</span> <span class="nav-text">Objective-C如何实现Category的</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -713,6 +626,10 @@
 
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 

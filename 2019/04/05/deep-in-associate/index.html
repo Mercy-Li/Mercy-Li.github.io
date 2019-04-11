@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT">
+  <meta name="keywords" content="iOS底层原理,">
 
 
 
@@ -79,16 +79,18 @@
 
 
 
-<meta name="description" content="iOS Objective-C Swift 架构 模块">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Danxl的技术博客">
-<meta property="og:url" content="http://yoursite.com/index.html">
+<meta name="description" content="动态给类添加属性我们知道，通过Category可以给类在运行时添加方法，但是添加属性不会动态添加实例变量，只有set get声明并没有自动实现。解决方法就是利用Associate（关联）的方式动态添加属性和属性的相关方法： 12345678-(void)setName:(NSString *)name &amp;#123;    // objc_setAssociatedObject(id object,">
+<meta name="keywords" content="iOS底层原理">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS底层原理 - Associate">
+<meta property="og:url" content="http://yoursite.com/2019/04/05/deep-in-associate/index.html">
 <meta property="og:site_name" content="Danxl的技术博客">
-<meta property="og:description" content="iOS Objective-C Swift 架构 模块">
+<meta property="og:description" content="动态给类添加属性我们知道，通过Category可以给类在运行时添加方法，但是添加属性不会动态添加实例变量，只有set get声明并没有自动实现。解决方法就是利用Associate（关联）的方式动态添加属性和属性的相关方法： 12345678-(void)setName:(NSString *)name &amp;#123;    // objc_setAssociatedObject(id object,">
 <meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-04-11T10:30:15.174Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Danxl的技术博客">
-<meta name="twitter:description" content="iOS Objective-C Swift 架构 模块">
+<meta name="twitter:title" content="iOS底层原理 - Associate">
+<meta name="twitter:description" content="动态给类添加属性我们知道，通过Category可以给类在运行时添加方法，但是添加属性不会动态添加实例变量，只有set get声明并没有自动实现。解决方法就是利用Associate（关联）的方式动态添加属性和属性的相关方法： 12345678-(void)setName:(NSString *)name &amp;#123;    // objc_setAssociatedObject(id object,">
 
 
 
@@ -118,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/">
+  <link rel="canonical" href="http://yoursite.com/2019/04/05/deep-in-associate/">
 
 
 
 
 
-  <title>Danxl的技术博客</title>
+  <title>iOS底层原理 - Associate | Danxl的技术博客</title>
   
 
 
@@ -143,8 +145,7 @@
     
   
 
-  <div class="container sidebar-position-left 
-  page-home">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -217,147 +218,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/05/deep-in-category/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Daniel Li">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Danxl的技术博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/04/05/deep-in-category/" itemprop="url">iOS底层原理 - Category</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-04-05T15:05:15+08:00">
-                2019-04-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Category作用"><a href="#Category作用" class="headerlink" title="Category作用"></a>Category作用</h3><p>Category又叫分类，能够在不改变原有类的基础上为类增加一些方法。我们日常开发中经常会用到Category这个特性，那么Objective-C又是如何实现的呢？</p>
-<p>首先我们来看Category使用的一些特点：</p>
-<ol>
-<li>只能增加方法，不能增加成员变量</li>
-<li>分类方法可以访问原有类的成员变量</li>
-<li>分类可以实现原有类的方法，但是会覆盖原有类方法（并不是真正覆盖，而是分类的方法实现被优先调用了）</li>
-</ol>
-<p>分类不能增加成员变量很好理解，因为在编译期间，类的内存结构和大小就已经被确定下来，而分类是在运行期间加载的，没有办法在原有类的基础上再添加成员变量了，但是可以通过runtime关联的方式进行添加，具体原理可参照我的另一篇文章 <a href="https://danxl.com/2019/04/05/deep-in-associate/" target="_blank" rel="noopener">iOS底层原理 - Associate</a>。而能动态添加方法是因为方法在类的数据结构是<code>struct objc_method_list **methodLists</code>，可以看出<code>methodLists</code>指向的是一个二维指针，虽没有办法扩展<code>methodLists</code>指向的内存区域，但可以改变这个内存区域的值（存储的是指针）来达到动态添加方法。</p>
-<h3 id="Category结构"><a href="#Category结构" class="headerlink" title="Category结构"></a>Category结构</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">typedef struct category_t &#123;</span><br><span class="line">    const char *name;  //类的名字</span><br><span class="line">    classref_t cls;  //类</span><br><span class="line">    struct method_list_t *instanceMethods;  //category中所有给类添加的实例方法的列表</span><br><span class="line">    struct method_list_t *classMethods;  //category中所有添加的类方法的列表</span><br><span class="line">    struct protocol_list_t *protocols;  //category实现的所有协议的列表</span><br><span class="line">    struct property_list_t *instanceProperties;  //category中添加的所有属性</span><br><span class="line">&#125; category_t;</span><br></pre></td></tr></table></figure>
-<p>上面是Category的结构体表示，从字段中也可以看出Category能够添加实例方法、类方法、协议、属性，但添加属性时不会生成实例变量和get set方法，原因上面已经阐述过。</p>
-<h3 id="Objective-C如何实现Category的"><a href="#Objective-C如何实现Category的" class="headerlink" title="Objective-C如何实现Category的"></a>Objective-C如何实现Category的</h3><p>Category和Class都是通过runtime加载的，而runtime和其他系统库一样是通过<em>dyld</em>动态加载的，我们从runtime入口方法找:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">void _objc_init(void)</span><br><span class="line">&#123;</span><br><span class="line">    static bool initialized = false;</span><br><span class="line">    if (initialized) return;</span><br><span class="line">    initialized = true;</span><br><span class="line">    </span><br><span class="line">    // fixme defer initialization until an objc-using image is found?</span><br><span class="line">    environ_init();</span><br><span class="line">    tls_init();</span><br><span class="line">    static_init();</span><br><span class="line">    lock_init();</span><br><span class="line">    exception_init();</span><br><span class="line"></span><br><span class="line">    _dyld_objc_notify_register(&amp;map_images, load_images, unmap_image);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>通过函数调用栈最终找到<code>attachCategories</code>的调用，</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> _objc_init(<span class="keyword">void</span>);</span><br><span class="line">└── <span class="function"><span class="keyword">void</span> <span class="title">map_images</span><span class="params">(...)</span></span>;</span><br><span class="line">    └── <span class="function"><span class="keyword">void</span> <span class="title">map_images_nolock</span><span class="params">(...)</span></span>;</span><br><span class="line">        └── <span class="keyword">void</span> _read_images(...);</span><br><span class="line">            └── <span class="keyword">void</span> _read_images(...);</span><br><span class="line">                └── <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">remethodizeClass</span><span class="params">(Class cls)</span></span>;</span><br><span class="line">                    └──attachCategories(Class cls, category_list *cats, <span class="keyword">bool</span> flush_caches);</span><br></pre></td></tr></table></figure>
-<p>而其实现的简易版为：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">void</span> </span><br><span class="line">attachCategories(Class cls, category_list *cats, <span class="keyword">bool</span> flush_caches)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (!cats) <span class="keyword">return</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">bool</span> isMeta = cls-&gt;isMetaClass();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">method_list_t</span> **mlists = (<span class="keyword">method_list_t</span> **)</span><br><span class="line">        <span class="built_in">malloc</span>(cats-&gt;count * <span class="keyword">sizeof</span>(*mlists));</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> mcount = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> i = cats-&gt;count;</span><br><span class="line">    <span class="keyword">bool</span> fromBundle = NO;</span><br><span class="line">    <span class="keyword">while</span> (i--) &#123;</span><br><span class="line">        <span class="keyword">auto</span>&amp; entry = cats-&gt;<span class="built_in">list</span>[i];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">method_list_t</span> *mlist = entry.cat-&gt;methodsForMeta(isMeta);</span><br><span class="line">        <span class="keyword">if</span> (mlist) &#123;</span><br><span class="line">            mlists[mcount++] = mlist;</span><br><span class="line">            fromBundle |= entry.hi-&gt;isBundle();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">auto</span> rw = cls-&gt;data();</span><br><span class="line"></span><br><span class="line">    prepareMethodLists(cls, mlists, mcount, NO, fromBundle);</span><br><span class="line">    rw-&gt;methods.attachLists(mlists, mcount);</span><br><span class="line">    <span class="built_in">free</span>(mlists);</span><br><span class="line">    <span class="keyword">if</span> (flush_caches  &amp;&amp;  mcount &gt; <span class="number">0</span>) flushCaches(cls);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>可以看出，增加方法的操作是通过分配一个大的实例方法列表<code>method_list_t **mlists = (method_list_t **) malloc(cats-&gt;count * sizeof(*mlists));</code>，然后通过循环将category中的方法填入到这个大的列表中，最后交给<code>rw-&gt;methods.attachLists(mlists, mcount);</code>将方法列表增加到类的方法列表上。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">attachLists</span><span class="params">(List* <span class="keyword">const</span> * addedLists, <span class="keyword">uint32_t</span> addedCount)</span> </span>&#123;</span><br><span class="line"> <span class="keyword">if</span> (hasArray()) &#123;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">//旧的方法列表的长度</span></span><br><span class="line">        <span class="keyword">uint32_t</span> oldCount = <span class="built_in">array</span>()-&gt;count;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">//新的方法列表的长度</span></span><br><span class="line">        <span class="keyword">uint32_t</span> newCount = oldCount + addedCount;</span><br><span class="line">        </span><br><span class="line">        setArray((<span class="keyword">array_t</span> *)<span class="built_in">realloc</span>(<span class="built_in">array</span>(), <span class="keyword">array_t</span>::byteSize(newCount)));</span><br><span class="line">        <span class="built_in">array</span>()-&gt;count = newCount;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">//从addedCount的偏移量添加旧的方法列表</span></span><br><span class="line">        memmove(<span class="built_in">array</span>()-&gt;lists + addedCount, <span class="built_in">array</span>()-&gt;lists, </span><br><span class="line">                oldCount * <span class="keyword">sizeof</span>(<span class="built_in">array</span>()-&gt;lists[<span class="number">0</span>]));</span><br><span class="line">        <span class="comment">//从开始添加新方法列表</span></span><br><span class="line">        <span class="built_in">memcpy</span>(<span class="built_in">array</span>()-&gt;lists, addedLists, </span><br><span class="line">               addedCount * <span class="keyword">sizeof</span>(<span class="built_in">array</span>()-&gt;lists[<span class="number">0</span>]));</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这也说明了同名的方法其实是添加到了原来列表的前面，而不是覆盖。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
 
   
 
@@ -387,9 +250,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/04/05/deep-in-associate/" itemprop="url">iOS底层原理 - Associate</a></h1>
+          <h1 class="post-title" itemprop="name headline">iOS底层原理 - Associate</h1>
         
 
         <div class="post-meta">
@@ -439,9 +300,7 @@
       
 
       
-        
-          
-            <h3 id="动态给类添加属性"><a href="#动态给类添加属性" class="headerlink" title="动态给类添加属性"></a>动态给类添加属性</h3><p>我们知道，通过Category可以给类在运行时添加方法，但是添加属性不会动态添加实例变量，只有set get声明并没有自动实现。解决方法就是利用Associate（关联）的方式动态添加属性和属性的相关方法：</p>
+        <h3 id="动态给类添加属性"><a href="#动态给类添加属性" class="headerlink" title="动态给类添加属性"></a>动态给类添加属性</h3><p>我们知道，通过Category可以给类在运行时添加方法，但是添加属性不会动态添加实例变量，只有set get声明并没有自动实现。解决方法就是利用Associate（关联）的方式动态添加属性和属性的相关方法：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">-(void)setName:(NSString *)name &#123;</span><br><span class="line">    // objc_setAssociatedObject(id object, const void *key, id value, objc_AssociationPolicy policy);</span><br><span class="line">    objc_setAssociatedObject(self, @&quot;name&quot;,name, OBJC_ASSOCIATION_RETAIN_NONATOMIC);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">-(NSString *)name &#123;</span><br><span class="line">    return objc_getAssociatedObject(self, @&quot;name&quot;);    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p><em>policy</em>是一个枚举，表示属性的保存策略：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">typedef OBJC_ENUM(uintptr_t, objc_AssociationPolicy) &#123;</span><br><span class="line">    OBJC_ASSOCIATION_ASSIGN = 0,  // 指定一个弱引用相关联的对象</span><br><span class="line">    OBJC_ASSOCIATION_RETAIN_NONATOMIC = 1, // 指定相关对象的强引用，非原子性</span><br><span class="line">    OBJC_ASSOCIATION_COPY_NONATOMIC = 3,  // 指定相关的对象被复制，非原子性</span><br><span class="line">    OBJC_ASSOCIATION_RETAIN = 01401,  // 指定相关对象的强引用，原子性</span><br><span class="line">    OBJC_ASSOCIATION_COPY = 01403     // 指定相关的对象被复制，原子性   </span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
@@ -457,8 +316,6 @@
 <p>我的理解是应该<code>ObjcAssociation</code>中的<code>value</code>置为nil即可，至于为什么policy里没有weak，我想应该是在这个value所指的对象被销毁时，没有高效的办法在<code>AssociationsHashMap</code>找到这个<code>value</code>指针并把它置为nil（因为weak原理是通过全局的弱引用表查找的，这里的<code>value</code>并不会存入弱引用表）。</p>
 <p>以上是我个人的见解，如有错误还请指出，谢谢。</p>
 
-          
-        
       
     </div>
     
@@ -473,14 +330,36 @@
 
     <footer class="post-footer">
       
-
+        <div class="post-tags">
+          
+            <a href="/tags/iOS底层原理/" rel="tag"># iOS底层原理</a>
+          
+        </div>
       
 
       
+      
+      
 
       
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/05/deep-in-category/" rel="prev" title="iOS底层原理 - Category">
+                iOS底层原理 - Category <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
       
-        <div class="post-eof"></div>
+
+      
       
     </footer>
   </div>
@@ -490,10 +369,11 @@
   </article>
 
 
-    
-  </section>
 
-  
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -501,6 +381,10 @@
 
 
           
+
+  
+
+
 
         </div>
         
@@ -521,8 +405,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -573,6 +466,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#动态给类添加属性"><span class="nav-number">1.</span> <span class="nav-text">动态给类添加属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关联的底层实现"><span class="nav-number">2.</span> <span class="nav-text">关联的底层实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么policy没有weak"><span class="nav-number">3.</span> <span class="nav-text">为什么policy没有weak</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -713,6 +622,10 @@
 
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 
