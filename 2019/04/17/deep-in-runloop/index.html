@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="iOS底层原理,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Danxl的技术博客" type="application/atom+xml">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="RunLoop概念一般来讲，在一个线程中运行一个任务，任务运行结束后线程就会退出。但是在移动端，需要有个机制，能让主线程一直运行下去，并且能接受触摸事件，又能在空闲时休眠以节省资源，在iOS中，这个机制就叫做 RunLoop. iOS 提供了两个对象来处理 RunLoop，NSRunLoop 和 CFRunLoopRef。看命名也可以得知，CFRunLoopRef 是在 CoreFoundatio">
+<meta name="keywords" content="iOS底层原理">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS底层原理 - RunLoop">
+<meta property="og:url" content="http://danxl.com/2019/04/17/deep-in-runloop/index.html">
+<meta property="og:site_name" content="Danxl的技术博客">
+<meta property="og:description" content="RunLoop概念一般来讲，在一个线程中运行一个任务，任务运行结束后线程就会退出。但是在移动端，需要有个机制，能让主线程一直运行下去，并且能接受触摸事件，又能在空闲时休眠以节省资源，在iOS中，这个机制就叫做 RunLoop. iOS 提供了两个对象来处理 RunLoop，NSRunLoop 和 CFRunLoopRef。看命名也可以得知，CFRunLoopRef 是在 CoreFoundatio">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://danxl.com/images/RunLoop_0.png">
+<meta property="og:updated_time" content="2019-05-03T15:41:57.040Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS底层原理 - RunLoop">
+<meta name="twitter:description" content="RunLoop概念一般来讲，在一个线程中运行一个任务，任务运行结束后线程就会退出。但是在移动端，需要有个机制，能让主线程一直运行下去，并且能接受触摸事件，又能在空闲时休眠以节省资源，在iOS中，这个机制就叫做 RunLoop. iOS 提供了两个对象来处理 RunLoop，NSRunLoop 和 CFRunLoopRef。看命名也可以得知，CFRunLoopRef 是在 CoreFoundatio">
+<meta name="twitter:image" content="http://danxl.com/images/RunLoop_0.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://danxl.com/2019/04/17/deep-in-runloop/">
+
+
+
+
+
+  <title>iOS底层原理 - RunLoop | Danxl的技术博客</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Danxl的技术博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://danxl.com/2019/04/17/deep-in-runloop/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Daniel Li">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Danxl的技术博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">iOS底层原理 - RunLoop</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-17T14:13:10+08:00">
+                2019-04-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/04/17/deep-in-runloop/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/04/17/deep-in-runloop/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="RunLoop概念"><a href="#RunLoop概念" class="headerlink" title="RunLoop概念"></a>RunLoop概念</h3><p>一般来讲，在一个线程中运行一个任务，任务运行结束后线程就会退出。但是在移动端，需要有个机制，能让主线程一直运行下去，并且能接受触摸事件，又能在空闲时休眠以节省资源，在iOS中，这个机制就叫做 RunLoop.</p>
+<p>iOS 提供了两个对象来处理 RunLoop，<code>NSRunLoop</code> 和 <code>CFRunLoopRef</code>。看命名也可以得知，<code>CFRunLoopRef</code> 是在 CoreFoundation 框架内的，它提供了纯C的API，都是线程安全的。<code>NSRunLoop</code> 是基于 <code>CFRunLoopRef</code> 的封装，提供了面向对象的API，不是线程安全的。下文中代码都以 <code>CFRunLoopRef</code> 为主。</p>
+<h3 id="RunLoop与线程"><a href="#RunLoop与线程" class="headerlink" title="RunLoop与线程"></a>RunLoop与线程</h3><p>RunLoop 与线程是一一对应的关系，除了主线程外，其余线程开启时，RunLoop 不会自动创建，当第一次获取RunLoop时才会自动创建。当线程结束时，RunLoop会销毁。苹果不允许直接创建 RunLoop，它提供了两个自动获取的函数：<code>CFRunLoopGetMain()</code>和<code>CFRunLoopGetCurrent()</code>。原理是全局有一个字典 <code>loopsDic</code>，key存放的是线程 <code>pthread_t</code>，value存放的是 <code>CFRunLoopRef</code>。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> CFMutableDictionaryRef loopsDic;</span><br></pre></td></tr></table></figure>
+<h3 id="RunLoop结构"><a href="#RunLoop结构" class="headerlink" title="RunLoop结构"></a>RunLoop结构</h3><p>每个RunLoop对象包含若干个mode，每个mode又包含若干个 Source/Timer/Observer。每次调用RunLoop的主函数时，都会指定一个mode，这个mode被称作 CurrentMode，如果需要切换mode，只能退出loop，重新指定mode进入。这样做主要是分隔开不同组的 Source/Timer/Observer，让其互不影响。</p>
+<p><img src="/images/RunLoop_0.png" alt></p>
+<h4 id="Source"><a href="#Source" class="headerlink" title="Source"></a>Source</h4><p>事件产生的地方，代码里用<code>CFRunLoopSourceRef</code>表示，Source有两个版本，Source0 和 Source1。</p>
+<ul>
+<li>Source0  只包含了一个函数指针，并不能主动触发事件，使用时，需要先调用<code>CFRunLoopSourceSignal(source)</code>，将这个source标记为待处理，然后手动调用<code>CFRunLoopWakeUp(runloop)</code>来唤醒 RunLoop，让其处理这个事件。</li>
+<li>Source1 包含了一个 mach_port 和一个函数指针，被用于通过内核和其他线程相互发送消息。这种Source能主动唤醒RunLoop线程。</li>
+</ul>
+<h4 id="Time"><a href="#Time" class="headerlink" title="Time"></a>Time</h4><p>基于时间的触发器，代码里用<code>CFRunLoopTimerRef</code>表示。包含一个时间长度和函数指针，和 NSTimer 可以 bridged 混用。当它加入到 RunLoop 中时，RunLoop 会注册对应的时间点，当时间点到，RunLoop会被唤醒以执行那个回调。</p>
+<h4 id="Observer"><a href="#Observer" class="headerlink" title="Observer"></a>Observer</h4><p>观察者，代码里用<code>CFRunLoopObserverRef</code>表示。每个观察者都包含了一个函数指针，当RunLoop的状态发生变化时，观察者能通过这个回调接受到这个变化，可以观测的时间点有这么几个：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">typedef</span> <span class="title">CF_OPTIONS</span><span class="params">(CFOptionFlags, CFRunLoopActivity)</span> </span>&#123;</span><br><span class="line">    kCFRunLoopEntry         = (<span class="number">1U</span>L &lt;&lt; <span class="number">0</span>), <span class="comment">// 即将进入Loop</span></span><br><span class="line">    kCFRunLoopBeforeTimers  = (<span class="number">1U</span>L &lt;&lt; <span class="number">1</span>), <span class="comment">// 即将处理 Timer</span></span><br><span class="line">    kCFRunLoopBeforeSources = (<span class="number">1U</span>L &lt;&lt; <span class="number">2</span>), <span class="comment">// 即将处理 Source</span></span><br><span class="line">    kCFRunLoopBeforeWaiting = (<span class="number">1U</span>L &lt;&lt; <span class="number">5</span>), <span class="comment">// 即将进入休眠</span></span><br><span class="line">    kCFRunLoopAfterWaiting  = (<span class="number">1U</span>L &lt;&lt; <span class="number">6</span>), <span class="comment">// 刚从休眠中唤醒</span></span><br><span class="line">    kCFRunLoopExit          = (<span class="number">1U</span>L &lt;&lt; <span class="number">7</span>), <span class="comment">// 即将退出Loop</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>PS: UIKit中的[UIView drawRect]是在 kCFRunLoopBeforeWaiting 时执行绘制的。</p>
+</blockquote>
+<h3 id="RunLoop-的-Mode"><a href="#RunLoop-的-Mode" class="headerlink" title="RunLoop 的 Mode"></a>RunLoop 的 Mode</h3><p>RunLoop和mode结构：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> __<span class="title">CFRunLoopMode</span> &#123;</span></span><br><span class="line">    CFStringRef _name;            <span class="comment">// Mode Name, 例如 @"kCFRunLoopDefaultMode"</span></span><br><span class="line">    CFMutableSetRef _sources0;    <span class="comment">// Set</span></span><br><span class="line">    CFMutableSetRef _sources1;    <span class="comment">// Set</span></span><br><span class="line">    CFMutableArrayRef _observers; <span class="comment">// Array</span></span><br><span class="line">    CFMutableArrayRef _timers;    <span class="comment">// Array</span></span><br><span class="line">    ...</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> __<span class="title">CFRunLoop</span> &#123;</span></span><br><span class="line">    CFMutableSetRef _commonModes;     <span class="comment">// Set</span></span><br><span class="line">    CFMutableSetRef _commonModeItems; <span class="comment">// Set&lt;Source/Observer/Timer&gt;</span></span><br><span class="line">    CFRunLoopModeRef _currentMode;    <span class="comment">// Current Runloop Mode</span></span><br><span class="line">    CFMutableSetRef _modes;           <span class="comment">// Set</span></span><br><span class="line">    ...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>Runloop Mode 实际上是 Source，Timer 和 Observer 的集合，不同的 Mode 把不同组的 Source，Timer 和 Observer 隔绝开来。</p>
+<p>iOS 中公开出来只有 kCFRunLoopDefaultMode 和 UITrackingRunLoopMode。前者是主线程的 mode，后者是在 UIScrollView 滑动时的mode，这样保证了两者的互不影响，所以 iOS 滑动比较流畅。</p>
+<p>这里还有另一个commonModes的概念，默认 kCFRunLoopDefaultMode 和 UITrackingRunLoopMode都被标记为CommonMode（通过<code>_commonModes</code>标记他们的<code>_name</code>） 。我们都知道NSTimer默认被加在主线程的RunLoop中，如果滑动scrollView，NSTimer是不会工作的，解决方法就是将NSTimer加入到顶层RunLoop的 <code>commonModeItems</code>中，<code>commonModeItems</code> 被 RunLoop 自动更新到所有具有 Common 属性的 Mode 里去。</p>
+<h3 id="RunLoop-实战中的用途"><a href="#RunLoop-实战中的用途" class="headerlink" title="RunLoop 实战中的用途"></a>RunLoop 实战中的用途</h3><h4 id="AutoreleasePool"><a href="#AutoreleasePool" class="headerlink" title="AutoreleasePool"></a>AutoreleasePool</h4><p>App启动后，会在主线程RunLoop中注册两个Observer，第一个是在 <em>kCFRunLoopEntry</em> 时注册，并且优先级最高，保证优先创建释放池；第二个注册了两个事件，在 <em>kCFRunLoopBeforeWaiting</em> 时释放旧池创建新池，在 <em>kCFRunLoopExit</em> 中释放。</p>
+<p>所以在主线程环境下，都是被RunLoop创建好的自动释放池环绕的，开发者不必显示创建自动释放池。</p>
+<h4 id="事件响应"><a href="#事件响应" class="headerlink" title="事件响应"></a>事件响应</h4><p>苹果注册了一个 <em>Source1</em>（基于mach port）来接受系统事件。当一个硬件事件发生后，比如触摸、摇晃等，会由IOKit生成一个 IOHIDEvent 事件，随后mach port转发这些事件给响应的App进程，之后注册的那个Source1就会触发回调，进行应用内部的事件分发。</p>
+<p>之后苹果会把IOHIDEvent处理包装成UIEvent进行事件传递和事件响应。之后的故事相信大家都懂了，就是苹果的响应链了。</p>
+<h4 id="UI更新"><a href="#UI更新" class="headerlink" title="UI更新"></a>UI更新</h4><p>当界面的坐标更新或者切换横竖屏或者手动调用了 <em>setNeedsLayout/setNeedsDisplay</em> 方法后，苹果会将这个view标记为待更新，并提交到一个全局的容器中。</p>
+<p>苹果注册了一个 Observer 监听 <em>kCFRunLoopBeforeWaiting</em> 和 <em>kCFRunLoopExit</em> ，回调执行一个很长的函数，这个函数会遍历上述那个全局容器里的view，来进行绘制和调整。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">_ZN2CA11Transaction17observer_callbackEP19__CFRunLoopObservermPv()</span><br><span class="line">    QuartzCore:CA::Transaction::observer_callback:</span><br><span class="line">        CA::Transaction::commit();</span><br><span class="line">            CA::Context::commit_transaction();</span><br><span class="line">                CA::Layer::layout_and_display_if_needed();</span><br><span class="line">                    CA::Layer::layout_if_needed();</span><br><span class="line">                        [CALayer layoutSublayers];</span><br><span class="line">                            [UIView layoutSubviews];</span><br><span class="line">                    CA::Layer::display_if_needed();</span><br><span class="line">                        [CALayer display];</span><br><span class="line">                            [UIView drawRect];</span><br></pre></td></tr></table></figure>
+<h4 id="定时器"><a href="#定时器" class="headerlink" title="定时器"></a>定时器</h4><p>上面也说到，<em>NSTimer</em> 其实就是 <em>CFRunLoopTimerRef</em>，当一个Timer注册到RunLoop中，RunLoop会为其在时间点重复的回调，但RunLoop不会非常准确的在时间点进行回调，有个属性叫 <em>Tolerance</em>， 超过这个 <em>Tolerance</em> 后，就会丢弃这次回调。</p>
+<h4 id="PerformSelecter"><a href="#PerformSelecter" class="headerlink" title="PerformSelecter"></a>PerformSelecter</h4><p>当调用 <code>performSelecter:afterDelay:</code> 后，其实就是在当前线程的RunLoop中注册了一个Timer并回调该Selector。如果当前线程没有RunLoop，则失效。</p>
+<p>#### </p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/iOS底层原理/" rel="tag"># iOS底层原理</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/05/deep-in-category/" rel="next" title="iOS底层原理 - Category">
+                <i class="fa fa-chevron-left"></i> iOS底层原理 - Category
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/avatar.JPG" alt="Daniel Li">
+          <p class="site-author-name" itemprop="name">Daniel Li</p>
+           
+              <p class="site-description motion-element" itemprop="description">iOS Objective-C Swift 架构 模块</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#RunLoop概念"><span class="nav-number">1.</span> <span class="nav-text">RunLoop概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RunLoop与线程"><span class="nav-number">2.</span> <span class="nav-text">RunLoop与线程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RunLoop结构"><span class="nav-number">3.</span> <span class="nav-text">RunLoop结构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Source"><span class="nav-number">3.1.</span> <span class="nav-text">Source</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Time"><span class="nav-number">3.2.</span> <span class="nav-text">Time</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Observer"><span class="nav-number">3.3.</span> <span class="nav-text">Observer</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RunLoop-的-Mode"><span class="nav-number">4.</span> <span class="nav-text">RunLoop 的 Mode</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RunLoop-实战中的用途"><span class="nav-number">5.</span> <span class="nav-text">RunLoop 实战中的用途</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#AutoreleasePool"><span class="nav-number">5.1.</span> <span class="nav-text">AutoreleasePool</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#事件响应"><span class="nav-number">5.2.</span> <span class="nav-text">事件响应</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#UI更新"><span class="nav-number">5.3.</span> <span class="nav-text">UI更新</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#定时器"><span class="nav-number">5.4.</span> <span class="nav-text">定时器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#PerformSelecter"><span class="nav-number">5.5.</span> <span class="nav-text">PerformSelecter</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Daniel Li</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://Daniel.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://danxl.com/2019/04/17/deep-in-runloop/';
+          this.page.identifier = '2019/04/17/deep-in-runloop/';
+          this.page.title = 'iOS底层原理 - RunLoop';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://Daniel.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
