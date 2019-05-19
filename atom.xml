@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://danxl.com/"/>
-  <updated>2019-05-03T15:41:57.040Z</updated>
+  <updated>2019-05-18T14:26:14.993Z</updated>
   <id>http://danxl.com/</id>
   
   <author>
@@ -15,6 +15,49 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Swift学习笔记</title>
+    <link href="http://danxl.com/2019/05/17/swift-note-md/"/>
+    <id>http://danxl.com/2019/05/17/swift-note-md/</id>
+    <published>2019-05-17T15:27:07.000Z</published>
+    <updated>2019-05-18T14:26:14.993Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;h4 id=&quot;基础&quot;&gt;&lt;a href=&quot;#基础&quot; class=&quot;headerlink&quot; title=&quot;基础&quot;&gt;&lt;/a&gt;基础&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Optional 可以用在所有的类型上&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;code&gt;typealias
+        
+      
+    
+    </summary>
+    
+    
+      <category term="swift" scheme="http://danxl.com/tags/swift/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>iOS底层原理 - Class</title>
+    <link href="http://danxl.com/2019/05/03/deep-in-class/"/>
+    <id>http://danxl.com/2019/05/03/deep-in-class/</id>
+    <published>2019-05-03T15:46:30.000Z</published>
+    <updated>2019-05-03T15:47:02.707Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+      <category term="iOS底层原理" scheme="http://danxl.com/tags/iOS%E5%BA%95%E5%B1%82%E5%8E%9F%E7%90%86/"/>
+    
+  </entry>
   
   <entry>
     <title>iOS底层原理 - RunLoop</title>

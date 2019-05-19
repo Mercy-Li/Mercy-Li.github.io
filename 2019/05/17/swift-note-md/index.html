@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="swift,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Danxl的技术博客" type="application/atom+xml">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="基础 Optional 可以用在所有的类型上  typealias AudioSample = UInt16 别名  合并空值运算符 a ?? b， a必须是optional，等价为a != nil ? a! : b  String可以用 + 运算符，可以用 == 比较  Array也可以用 + 运算符  String, Int, Double, Bool 都是可哈希的  do while 叫在s">
+<meta name="keywords" content="swift">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Swift学习笔记">
+<meta property="og:url" content="http://danxl.com/2019/05/17/swift-note-md/index.html">
+<meta property="og:site_name" content="Danxl的技术博客">
+<meta property="og:description" content="基础 Optional 可以用在所有的类型上  typealias AudioSample = UInt16 别名  合并空值运算符 a ?? b， a必须是optional，等价为a != nil ? a! : b  String可以用 + 运算符，可以用 == 比较  Array也可以用 + 运算符  String, Int, Double, Bool 都是可哈希的  do while 叫在s">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-05-18T14:26:14.993Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Swift学习笔记">
+<meta name="twitter:description" content="基础 Optional 可以用在所有的类型上  typealias AudioSample = UInt16 别名  合并空值运算符 a ?? b， a必须是optional，等价为a != nil ? a! : b  String可以用 + 运算符，可以用 == 比较  Array也可以用 + 运算符  String, Int, Double, Bool 都是可哈希的  do while 叫在s">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://danxl.com/2019/05/17/swift-note-md/">
+
+
+
+
+
+  <title>Swift学习笔记 | Danxl的技术博客</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Danxl的技术博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://danxl.com/2019/05/17/swift-note-md/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Daniel Li">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Danxl的技术博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Swift学习笔记</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-17T23:27:07+08:00">
+                2019-05-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/05/17/swift-note-md/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/05/17/swift-note-md/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h4 id="基础"><a href="#基础" class="headerlink" title="基础"></a>基础</h4><ul>
+<li><p>Optional 可以用在所有的类型上</p>
+</li>
+<li><p><code>typealias AudioSample = UInt16</code> 别名</p>
+</li>
+<li><p>合并空值运算符 <code>a ?? b</code>， a必须是optional，等价为<code>a != nil ? a! : b</code></p>
+</li>
+<li><p>String可以用 + 运算符，可以用 == 比较</p>
+</li>
+<li><p>Array也可以用 + 运算符</p>
+</li>
+<li><p>String, Int, Double, Bool 都是可哈希的</p>
+</li>
+<li><p>do while 叫在swift叫 repeat while</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">repeat</span> &#123;</span><br><span class="line">    </span><br><span class="line">&#125; <span class="keyword">while</span> (<span class="literal">true</span>)</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h4 id="Switch"><a href="#Switch" class="headerlink" title="Switch"></a>Switch</h4><ul>
+<li><p>switch 不需要显示break，一个情况匹配多个值用逗号隔开 <code>case &#39;a&#39;, &#39;A&#39;:</code></p>
+</li>
+<li><p>可以区间匹配 <code>case 1..&lt;5:</code></p>
+</li>
+<li><p>可以匹配元组，并可用 _ 来匹配所有值</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> point = (<span class="number">1</span>,<span class="number">1</span>)</span><br><span class="line"><span class="keyword">switch</span> point &#123;</span><br><span class="line">    <span class="keyword">case</span> (<span class="number">_</span>, <span class="number">1</span>):</span><br><span class="line">    	....</span><br><span class="line">    <span class="keyword">case</span> (-<span class="number">2</span>...<span class="number">2</span>, -<span class="number">2</span>...<span class="number">2</span>):</span><br><span class="line">    	...</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">   		...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>可以用值绑定</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> point = (<span class="number">2</span>, <span class="number">0</span>)</span><br><span class="line"><span class="keyword">switch</span> point &#123;</span><br><span class="line">    <span class="keyword">case</span> (<span class="keyword">let</span> x, <span class="number">0</span>):</span><br><span class="line">    	...</span><br><span class="line">    <span class="keyword">case</span> (<span class="number">0</span>, <span class="keyword">let</span> y):</span><br><span class="line">    	...</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">    	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>可以用where来检查额外情况 <code>case let (x, y) where x == y</code></p>
+</li>
+</ul>
+<h4 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h4><ul>
+<li>支持默认参数 <code>func someFunction(parameterWithDefault: Int = 12)</code></li>
+<li>可变形参 <code>func arithmeticMean(_ numbers: Double...) -&gt; Double</code>，在函数体内会被当做名字是numbers的[Double]常量数组</li>
+<li>inout来改变参数 `func swap(_ a: inout Int, _ b: inout Int)</li>
+</ul>
+<p>#### </p>
+<h4 id="闭包"><a href="#闭包" class="headerlink" title="闭包"></a>闭包</h4><ul>
+<li>函数和闭包都是引用类型</li>
+<li>@escaping 逃逸闭包，如果它作为参数传递进去，需要函数返回之后还能被调用就需要逃避闭包，通常作用异步调用block。逃逸闭包内必须显示self。</li>
+<li>@autoclosure 自动闭包，在参数用@autoclosure修饰时，传递参数可以像普通参数一样传递省略掉闭包语法的大括号。</li>
+</ul>
+<h4 id="枚举"><a href="#枚举" class="headerlink" title="枚举"></a>枚举</h4><ul>
+<li><p>switch检查枚举时应该为枚举的所有情况都覆盖，当然也可以提供default</p>
+</li>
+<li><p>遍历枚举。可以通过在枚举名字后面加 CaseIterable ，swift会提供allCases这个集合。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">enum Beverage: CaseIterable &#123;</span><br><span class="line">    case coffee, tea, juice</span><br><span class="line">&#125;</span><br><span class="line">let numberOfChoices = Beverage.allCases.count</span><br><span class="line">for beverage in Beverage.allCases &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>关联值。 关联值只是指定类型</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">enum</span> <span class="title">Barcode</span> </span>&#123;</span><br><span class="line">    <span class="keyword">case</span> upc(<span class="type">Int</span>, <span class="type">Int</span>, <span class="type">Int</span>, <span class="type">Int</span>)</span><br><span class="line">    <span class="keyword">case</span> qrCode(<span class="type">String</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>原始值。 原始值指定了具体值，需要每个值类型都一样</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">enum</span> <span class="title">ASCIIControlCharacter</span>: <span class="title">Character</span> </span>&#123;</span><br><span class="line">    <span class="keyword">case</span> tab = <span class="string">"\t"</span></span><br><span class="line">    <span class="keyword">case</span> lineFeed = <span class="string">"\n"</span></span><br><span class="line">    <span class="keyword">case</span> carriageReturn = <span class="string">"\r"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>隐士指定原始值。整数时，第一个默认为0，之后递增1。字符串时，原始值默认为它的名称。可以使用<code>rawValue</code>访问原始值。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">enum</span> <span class="title">Planet</span>: <span class="title">Int</span> </span>&#123;</span><br><span class="line">    <span class="keyword">case</span> mercury = <span class="number">1</span>, venus, earth, mars, jupiter, saturn, uranus, neptune</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>枚举递归，使用<code>indirect</code>来表示可以递归</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">indirect</span> <span class="class"><span class="keyword">enum</span> <span class="title">ArithmeticExpression</span> </span>&#123;</span><br><span class="line">    <span class="keyword">case</span> number(<span class="type">Int</span>)</span><br><span class="line">    <span class="keyword">case</span> addition(<span class="type">ArithmeticExpression</span>, <span class="type">ArithmeticExpression</span>)</span><br><span class="line">    <span class="keyword">case</span> multiplication(<span class="type">ArithmeticExpression</span>, <span class="type">ArithmeticExpression</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h4 id="类和结构体"><a href="#类和结构体" class="headerlink" title="类和结构体"></a>类和结构体</h4><p>类和结构体共同之处：</p>
+<ul>
+<li>可以定义属性</li>
+<li>可以定义方法</li>
+<li>可以定义下标访问</li>
+<li>可以定义初始化器</li>
+<li>可以用extension</li>
+<li>可以遵循协议</li>
+</ul>
+<p>不同之处：</p>
+<ul>
+<li>类可以继承</li>
+<li>类有多态</li>
+<li>类可以在析构时释放分配的资源</li>
+<li>结构体是值类型，类是引用</li>
+<li>结构体可以接受默认的成员初始化器</li>
+<li><em>let</em>修饰的结构体，即便属性时<em>var</em>，也不能修改。但类的可以。</li>
+</ul>
+<p>其他注意事项：</p>
+<ul>
+<li>判断两个变量或者常量是否引用同一个实例，可以用 <em>===</em> 或者 <em>!==</em> 进行判断</li>
+<li>lazy 修饰的延迟存储属性，必须用var修饰，因为可能是在类初始化后才进行赋值的</li>
+</ul>
+<h4 id="类的初始化器规则"><a href="#类的初始化器规则" class="headerlink" title="类的初始化器规则"></a>类的初始化器规则</h4><ul>
+<li>指定初始化器必须从它的直系父类调用指定初始化器</li>
+<li>便捷初始化器必须从相同的类里调用另一个初始化器</li>
+<li>便捷初始化器最终必须调用一个指定初始化器</li>
+</ul>
+<p>总结：指定初始化器必须总是向上委托。便捷初始化器总是横向委托。</p>
+<h4 id="类的初始化两阶段"><a href="#类的初始化两阶段" class="headerlink" title="类的初始化两阶段"></a>类的初始化两阶段</h4><h5 id="阶段一"><a href="#阶段一" class="headerlink" title="阶段一"></a>阶段一</h5><ul>
+<li>指定或便捷初始化器在类中被调用；</li>
+<li>为这个类的新实例分配内存。内存还没有被初始化；</li>
+<li>这个类的指定初始化器确保所有由此类引入的存储属性都有一个值。现在这些存储属性的内存被初始化了；</li>
+<li>指定初始化器上交父类的初始化器为其存储属性执行相同的任务；</li>
+<li>这个调用父类初始化器的过程将沿着初始化器链一直向上进行，直到到达初始化器链的最顶部；</li>
+<li>一旦达了初始化器链的最顶部，在链顶部的类确保所有的存储属性都有一个值，此实例的内存被认为完全初始化了，此时第一阶段完成。</li>
+</ul>
+<p>阶段二</p>
+<ul>
+<li>从顶部初始化器往下，链中的每一个指定初始化器都有机会进一步定制实例。初始化器现在能够访问 self 并且可以修改它的属性，调用它的实例方法等等；</li>
+<li>最终，链中任何便捷初始化器都有机会定制实例以及使用 slef 。</li>
+</ul>
+<h4 id="类的初始化安全检查"><a href="#类的初始化安全检查" class="headerlink" title="类的初始化安全检查"></a>类的初始化安全检查</h4><p>安全检查1：</p>
+<p>指定初始化器必须保证在向上委托给父类初始化器前，其所在类引入的所有属性都要初始化完成</p>
+<p>安全检查2：</p>
+<p>指定初始化器必须向上委托父类初始化器，然后才能为继承的属性设置新值。否则新值会被父类的初始化器覆盖</p>
+<p>安全检查3：</p>
+<p>便捷初始化器必须先委托同类中的其他初始化器，然后再为任意属性赋新值。否则新值会被同类的初始化器覆盖</p>
+<p>安全检查4：</p>
+<p>初始化器在第一阶段初始化完成前，不能调用任何实例方法，不能读取任何实例属性的值，也不能引用self作为值</p>
+<h4 id="初始化器的继承和重写"><a href="#初始化器的继承和重写" class="headerlink" title="初始化器的继承和重写"></a>初始化器的继承和重写</h4><p>Swift的子类不会默认继承父类的初始化器。</p>
+<p>重写父类的指定初始化器需要加<em>override</em>，即便子类中它是一个便捷初始化器。重写父类的便捷初始化器不需要加。</p>
+<h5 id="默认继承初始化器的规则"><a href="#默认继承初始化器的规则" class="headerlink" title="默认继承初始化器的规则"></a>默认继承初始化器的规则</h5><ul>
+<li>如果子类没有定义任何指定初始化器，会自动继承所有父类的初始化器</li>
+<li>如果子类提供了所有父类的指定初始化器的实现 — 要么是通过上述规则实现，要么自定义实现的。那么它自动继承所有父类的便捷初始化器</li>
+</ul>
+<h4 id="必要初始化器"><a href="#必要初始化器" class="headerlink" title="必要初始化器"></a>必要初始化器</h4><p>使用<em>require</em>关键字表明所有该类的子类都必须实现该初始化器</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/swift/" rel="tag"># swift</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/05/03/deep-in-class/" rel="next" title="iOS底层原理 - Class">
+                <i class="fa fa-chevron-left"></i> iOS底层原理 - Class
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/avatar.JPG" alt="Daniel Li">
+          <p class="site-author-name" itemprop="name">Daniel Li</p>
+           
+              <p class="site-description motion-element" itemprop="description">iOS Objective-C Swift 架构 模块</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#基础"><span class="nav-number">1.</span> <span class="nav-text">基础</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Switch"><span class="nav-number">2.</span> <span class="nav-text">Switch</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#函数"><span class="nav-number">3.</span> <span class="nav-text">函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#闭包"><span class="nav-number">4.</span> <span class="nav-text">闭包</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#枚举"><span class="nav-number">5.</span> <span class="nav-text">枚举</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#类和结构体"><span class="nav-number">6.</span> <span class="nav-text">类和结构体</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#类的初始化器规则"><span class="nav-number">7.</span> <span class="nav-text">类的初始化器规则</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#类的初始化两阶段"><span class="nav-number">8.</span> <span class="nav-text">类的初始化两阶段</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#阶段一"><span class="nav-number">8.1.</span> <span class="nav-text">阶段一</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#类的初始化安全检查"><span class="nav-number">9.</span> <span class="nav-text">类的初始化安全检查</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#初始化器的继承和重写"><span class="nav-number">10.</span> <span class="nav-text">初始化器的继承和重写</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#默认继承初始化器的规则"><span class="nav-number">10.1.</span> <span class="nav-text">默认继承初始化器的规则</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#必要初始化器"><span class="nav-number">11.</span> <span class="nav-text">必要初始化器</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Daniel Li</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://Daniel.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://danxl.com/2019/05/17/swift-note-md/';
+          this.page.identifier = '2019/05/17/swift-note-md/';
+          this.page.title = 'Swift学习笔记';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://Daniel.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
