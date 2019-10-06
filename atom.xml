@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://danxl.com/"/>
-  <updated>2019-05-18T14:26:14.993Z</updated>
+  <updated>2019-10-06T13:12:11.631Z</updated>
   <id>http://danxl.com/</id>
   
   <author>
@@ -15,6 +15,30 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>What&#39;s new in iOS 13</title>
+    <link href="http://danxl.com/2019/09/30/What-s-new-in-iOS-13/"/>
+    <id>http://danxl.com/2019/09/30/What-s-new-in-iOS-13/</id>
+    <published>2019-09-30T00:33:27.000Z</published>
+    <updated>2019-10-06T13:12:11.631Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;p&gt;很久没更博，一方面懒，一方面也是新公司太特么忙了。。直奔主题吧，&lt;strong&gt;iOS 13 &lt;/strong&gt;出来也一阵子了，总的来说如果不升级
+        
+      
+    
+    </summary>
+    
+    
+      <category term="iOS13" scheme="http://danxl.com/tags/iOS13/"/>
+    
+  </entry>
   
   <entry>
     <title>Swift学习笔记</title>
@@ -44,13 +68,21 @@
   </entry>
   
   <entry>
-    <title>iOS底层原理 - Class</title>
-    <link href="http://danxl.com/2019/05/03/deep-in-class/"/>
-    <id>http://danxl.com/2019/05/03/deep-in-class/</id>
+    <title>iOS底层原理 - OC 对象</title>
+    <link href="http://danxl.com/2019/05/03/deep-in-object/"/>
+    <id>http://danxl.com/2019/05/03/deep-in-object/</id>
     <published>2019-05-03T15:46:30.000Z</published>
-    <updated>2019-05-03T15:47:02.707Z</updated>
+    <updated>2019-10-06T14:42:51.334Z</updated>
     
     <summary type="html">
+    
+      
+      
+        
+        
+          &lt;h3 id=&quot;OC-对象分类&quot;&gt;&lt;a href=&quot;#OC-对象分类&quot; class=&quot;headerlink&quot; title=&quot;OC 对象分类&quot;&gt;&lt;/a&gt;OC
+        
+      
     
     </summary>
     

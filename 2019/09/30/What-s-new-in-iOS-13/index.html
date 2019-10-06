@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="iOS13,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Danxl的技术博客" type="application/atom+xml">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="很久没更博，一方面懒，一方面也是新公司太特么忙了。。直奔主题吧，iOS 13 出来也一阵子了，总的来说如果不升级 Xcode，基本也没啥影响，但不升级总是下下策，还是看看升级后有哪些需要注意的吧，并且建议开发者们赶紧升起来。 Dark Mode苹果终于给系统UI加主题了，目前就两种，Dark Mode 和 Light Mode，如果你升到了 Xcode 11，就需要给自己的 app 进行主题适配了">
+<meta name="keywords" content="iOS13">
+<meta property="og:type" content="article">
+<meta property="og:title" content="What&#39;s new in iOS 13">
+<meta property="og:url" content="http://danxl.com/2019/09/30/What-s-new-in-iOS-13/index.html">
+<meta property="og:site_name" content="Danxl的技术博客">
+<meta property="og:description" content="很久没更博，一方面懒，一方面也是新公司太特么忙了。。直奔主题吧，iOS 13 出来也一阵子了，总的来说如果不升级 Xcode，基本也没啥影响，但不升级总是下下策，还是看看升级后有哪些需要注意的吧，并且建议开发者们赶紧升起来。 Dark Mode苹果终于给系统UI加主题了，目前就两种，Dark Mode 和 Light Mode，如果你升到了 Xcode 11，就需要给自己的 app 进行主题适配了">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://daniellixiao-image.oss-cn-beijing.aliyuncs.com/WX20190930-084200%402x.png">
+<meta property="og:updated_time" content="2019-10-06T13:12:11.631Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="What&#39;s new in iOS 13">
+<meta name="twitter:description" content="很久没更博，一方面懒，一方面也是新公司太特么忙了。。直奔主题吧，iOS 13 出来也一阵子了，总的来说如果不升级 Xcode，基本也没啥影响，但不升级总是下下策，还是看看升级后有哪些需要注意的吧，并且建议开发者们赶紧升起来。 Dark Mode苹果终于给系统UI加主题了，目前就两种，Dark Mode 和 Light Mode，如果你升到了 Xcode 11，就需要给自己的 app 进行主题适配了">
+<meta name="twitter:image" content="https://daniellixiao-image.oss-cn-beijing.aliyuncs.com/WX20190930-084200%402x.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://danxl.com/2019/09/30/What-s-new-in-iOS-13/">
+
+
+
+
+
+  <title>What's new in iOS 13 | Danxl的技术博客</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Danxl的技术博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://danxl.com/2019/09/30/What-s-new-in-iOS-13/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Daniel Li">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.JPG">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Danxl的技术博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">What's new in iOS 13</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-30T08:33:27+08:00">
+                2019-09-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/09/30/What-s-new-in-iOS-13/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/09/30/What-s-new-in-iOS-13/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>很久没更博，一方面懒，一方面也是新公司太特么忙了。。直奔主题吧，<strong>iOS 13 </strong>出来也一阵子了，总的来说如果不升级 <strong>Xcode</strong>，基本也没啥影响，但不升级总是下下策，还是看看升级后有哪些需要注意的吧，并且建议开发者们赶紧升起来。</p>
+<h3 id="Dark-Mode"><a href="#Dark-Mode" class="headerlink" title="Dark Mode"></a>Dark Mode</h3><p>苹果终于给系统UI加主题了，目前就两种，<strong>Dark Mode</strong> 和 <strong>Light Mode</strong>，如果你升到了 <strong>Xcode 11</strong>，就需要给自己的 app 进行主题适配了，如果你啥也不做并且系统主题切换为 <strong>Dark Mode </strong>，你的 app 背景色很可能就一团黑。</p>
+<ol>
+<li><p>进行适配最简单的就是放弃 <strong>Dark Mode</strong>，在系统为 <strong>Dark Mode</strong> 下也只采用 <strong>Ligth Mode</strong>，只需在 <strong>info.plist </strong>加上下图这个配置即可。</p>
+<p><img src="https://daniellixiao-image.oss-cn-beijing.aliyuncs.com/WX20190930-084200%402x.png" alt></p>
+</li>
+</ol>
+<blockquote>
+<p>本人在实际过程中还遇到这样的问题，开发时用的 Xcode 11 已用上述方式适配完毕，然而 jenkins 打包机仍是 Xcode 10，此时 jenkins 如果进行打包并上传 app store，会报错，大意就是识别不了这个 User Interface  Style 的 key（懒得找图了。。），所以目前如果是 Xcode 10 进行打包的话，还是不用适配了</p>
+</blockquote>
+<ol start="2">
+<li>当然是进行标准的 <strong>Dark Mode</strong> 适配啦，这方面适配主要是颜色和图片，这块适配详细写出来又能出一篇文章了。。这个本人还没有实践过，没啥话语权，暂贴个别人的<a href="https://mp.weixin.qq.com/s/6IKEeqjn6Kbqrh3yf4yPuw" target="_blank" rel="noopener">链接</a>吧。</li>
+</ol>
+<p>最后说说自己的想法，苹果在主题这块的尝试也是非常克制的，很多传统的 iOS 开发者对于主题这种概念其实很陌生，平时开发最多也就是定义几个全局颜色，其实做过 <strong>Flutter</strong> 就知道，里面的 <code>Theme</code> 真的特别好用。。当然这块有时间再更一篇 <strong>Flutter</strong> 相关的博客吧。相信在后面几个 iOS 版本中，主题的应用会更加广泛，并更易于UI颜色管理。</p>
+<h3 id="KVC"><a href="#KVC" class="headerlink" title="KVC"></a>KVC</h3><p>这下玩大了，之前开发者为了访问苹果的私有变量，通常都是用 KVC，比如为了设置 <code>UITextView</code> 的 placeholder，很多会用</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">UITextView</span> </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> placeholderLabel: <span class="type">UILabel?</span> &#123;</span><br><span class="line">        <span class="keyword">get</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> value(forKey: <span class="string">"_placeholderLabel"</span>) <span class="keyword">as</span>? <span class="type">UILabel</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这种写法其实我一直不建议，因为真的，指不定哪天苹果就改了变量名啥的，你就莫名其妙的崩了，果然，<strong>iOS 13</strong> 就禁止了对私有变量的 <code>ivar</code> 访问。在 <strong>iOS 13</strong>，上述代码会 crash：</p>
+<p><code>*** Terminating app due to uncaught exception &#39;NSGenericException&#39;, reason: &#39;Access to UITextField&#39;s _placeholderLabel ivar is prohibited. This is an application bug&#39;</code></p>
+<p>这意思很明确，老老实实按规矩开发，别老想着尽整些歪门邪道，当然也有开发者试过，可以用 <strong>runtime</strong> 来访问</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">NSObject</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">getIvar</span><span class="params">(name: String)</span></span> -&gt; <span class="type">Any?</span> &#123;</span><br><span class="line">        <span class="keyword">guard</span> <span class="keyword">let</span> _var = class_getInstanceVariable(type(of: <span class="keyword">self</span>), name) <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> object_getIvar(<span class="keyword">self</span>, _var)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个法子至少看起来靠谱，不会 crash，但一样，如果苹果之后改了什么，虽然 app 不会 crash，但也没达到想要的效果。</p>
+<h3 id="present"><a href="#present" class="headerlink" title="present"></a>present</h3><p>升到 <strong>iOS 13</strong> 后会发现<code>presentViewController</code>并不是全屏展示，是因为 <strong>iOS 13</strong> 中<code>viewController</code>里有个属性<code>modalPresentationStyle</code>默认为<code>UIModalPresentationAutomatic</code>，如需像以前一样全屏显示，设成<code>UIModalPresentationFullScreen</code>即可。</p>
+<h3 id="MPMoviePlayerController-的废弃"><a href="#MPMoviePlayerController-的废弃" class="headerlink" title="MPMoviePlayerController 的废弃"></a>MPMoviePlayerController 的废弃</h3><p><code>MPMoviePlayerController</code>早在 <strong>iOS 10</strong> 就被<code>AVPlayerViewController</code>取代了，而在 <strong>iOS 13</strong> 则彻底禁止使用了，这波很暴力很直接，也没啥好解释的，用 <strong>AVKit</strong> 就是了。</p>
+<h3 id="UIWebView-的废弃"><a href="#UIWebView-的废弃" class="headerlink" title="UIWebView 的废弃"></a>UIWebView 的废弃</h3><p>虽说在 <strong>iOS 12</strong> 已经废弃，但目前还会出现审核被拒的情况，所以，都9012年了，乖乖用<code>WKWebView</code>吧。</p>
+<h3 id="Device-Token"><a href="#Device-Token" class="headerlink" title="Device Token"></a>Device Token</h3><p>主要是 <code>deviceToken.description</code>的问题，在 <strong>iOS 12</strong> 中打印出来是</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;24bff3a1e sde1239f df187c31 63a06f8d b613dfa8 ea3361fb 2ds8123f 66dbf1ff7&gt;</span><br></pre></td></tr></table></figure>
+<p><strong>iOS 13</strong> 中则为</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;length = <span class="number">32</span>, bytes = <span class="number">0x24bff3a1e</span> sde1239f df187c31 63a06f8d ... 2ds8123f 66dbf1ff7&#125;</span><br></pre></td></tr></table></figure>
+<p>所以如果是以前采用 <code>description</code>来<code>trim</code>掉空格和<code>&lt;&gt;</code>的话，这次就会失败了。标准做法还是用<code>NSData</code>转<code>hex string</code>稳妥，不要整上述那种投机取巧的事。。这个道理其实和采用 <strong>KVC</strong> 访问私有变量道理一样的，苹果对于这块是说改就该的。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">Data</span> </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> hexadecimal: <span class="type">String</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">map</span> &#123; <span class="type">String</span>(format: <span class="string">"%02x"</span>, $<span class="number">0</span>) &#125;</span><br><span class="line">            .joined()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>从这些修改细节来说，还是乖乖听苹果爸爸的话，规规矩矩开发，少走歪路。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/iOS13/" rel="tag"># iOS13</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/05/17/swift-note-md/" rel="next" title="Swift学习笔记">
+                <i class="fa fa-chevron-left"></i> Swift学习笔记
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/avatar.JPG" alt="Daniel Li">
+          <p class="site-author-name" itemprop="name">Daniel Li</p>
+           
+              <p class="site-description motion-element" itemprop="description">iOS Objective-C Swift 架构 模块</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Dark-Mode"><span class="nav-number">1.</span> <span class="nav-text">Dark Mode</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#KVC"><span class="nav-number">2.</span> <span class="nav-text">KVC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#present"><span class="nav-number">3.</span> <span class="nav-text">present</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MPMoviePlayerController-的废弃"><span class="nav-number">4.</span> <span class="nav-text">MPMoviePlayerController 的废弃</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UIWebView-的废弃"><span class="nav-number">5.</span> <span class="nav-text">UIWebView 的废弃</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Device-Token"><span class="nav-number">6.</span> <span class="nav-text">Device Token</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Daniel Li</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://Daniel.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://danxl.com/2019/09/30/What-s-new-in-iOS-13/';
+          this.page.identifier = '2019/09/30/What-s-new-in-iOS-13/';
+          this.page.title = 'What\'s new in iOS 13';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://Daniel.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
