@@ -105,7 +105,10 @@
 <meta property="og:description" content="很久没更博，一方面懒，一方面也是新公司太特么忙了。。直奔主题吧，iOS 13 出来也一阵子了，总的来说如果不升级 Xcode，基本也没啥影响，但不升级总是下下策，还是看看升级后有哪些需要注意的吧，并且建议开发者们赶紧升起来。 Dark Mode苹果终于给系统UI加主题了，目前就两种，Dark Mode 和 Light Mode，如果你升到了 Xcode 11，就需要给自己的 app 进行主题适配了">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://daniellixiao-image.oss-cn-beijing.aliyuncs.com/WX20190930-084200%402x.png">
-<meta property="og:updated_time" content="2019-10-06T13:12:11.631Z">
+<meta property="og:image" content="http://danxl.com/images/iOS13_0.png">
+<meta property="og:image" content="http://danxl.com/images/iOS13_1.png">
+<meta property="og:image" content="http://danxl.com/images/iOS13_2.png">
+<meta property="og:updated_time" content="2019-10-27T13:37:26.747Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="What&#39;s new in iOS 13">
 <meta name="twitter:description" content="很久没更博，一方面懒，一方面也是新公司太特么忙了。。直奔主题吧，iOS 13 出来也一阵子了，总的来说如果不升级 Xcode，基本也没啥影响，但不升级总是下下策，还是看看升级后有哪些需要注意的吧，并且建议开发者们赶紧升起来。 Dark Mode苹果终于给系统UI加主题了，目前就两种，Dark Mode 和 Light Mode，如果你升到了 Xcode 11，就需要给自己的 app 进行主题适配了">
@@ -374,7 +377,33 @@
 <figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;length = <span class="number">32</span>, bytes = <span class="number">0x24bff3a1e</span> sde1239f df187c31 63a06f8d ... 2ds8123f 66dbf1ff7&#125;</span><br></pre></td></tr></table></figure>
 <p>所以如果是以前采用 <code>description</code>来<code>trim</code>掉空格和<code>&lt;&gt;</code>的话，这次就会失败了。标准做法还是用<code>NSData</code>转<code>hex string</code>稳妥，不要整上述那种投机取巧的事。。这个道理其实和采用 <strong>KVC</strong> 访问私有变量道理一样的，苹果对于这块是说改就该的。</p>
 <figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">extension</span> <span class="title">Data</span> </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> hexadecimal: <span class="type">String</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">map</span> &#123; <span class="type">String</span>(format: <span class="string">"%02x"</span>, $<span class="number">0</span>) &#125;</span><br><span class="line">            .joined()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>从这些修改细节来说，还是乖乖听苹果爸爸的话，规规矩矩开发，少走歪路。</p>
+<h3 id="Scene-Delegate"><a href="#Scene-Delegate" class="headerlink" title="Scene Delegate"></a>Scene Delegate</h3><p>如果我们用 xcode 11 新建一个项目，会发现多了一个 <strong>SceneDelegate</strong> 的文件，而如果我们再像以前采用全手写撸界面的方式（即删掉所有 storyboard），方式如下：</p>
+<ol>
+<li>删掉 main.storyboard 文件</li>
+<li>在 target 中把 <strong>Main Interface</strong> 删掉</li>
+<li>在<strong>AppDelegate</strong>里的<code>didFinishLaunching</code>方法里重新初始化<code>window</code>并赋予<code>rootViewController</code></li>
+</ol>
+<p>而如今这样改之后运行，会crash并报错如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">*** Terminating app due to uncaught exception &apos;NSInvalidArgumentException&apos;, reason: &apos;Could not find a storyboard named &apos;Main&apos; in bundle NSBundle</span><br></pre></td></tr></table></figure>
+<p>原因是这个 <strong>Scene</strong> 没有找到 <strong>main storyboard</strong>，我们发现在<strong>info.plist</strong>里多了这样的选项：</p>
+<p><img src="/images/iOS13_0.png" alt></p>
+<p>我们只需：</p>
+<ol>
+<li><p>删掉 <code>Storyboard Name</code>这行</p>
+</li>
+<li><p>把在<strong>AppDelegate</strong>里初始化<code>window</code>并设置<code>rootViewController</code>的代码放到<strong>SceneDelegate</strong>中：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">scene</span><span class="params">(<span class="number">_</span> scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions)</span></span> &#123;</span><br><span class="line">    <span class="keyword">guard</span> <span class="keyword">let</span> scene = (scene <span class="keyword">as</span>? <span class="type">UIWindowScene</span>) <span class="keyword">else</span> &#123; <span class="keyword">return</span> &#125;</span><br><span class="line">    window = <span class="type">UIWindow</span>(frame: <span class="type">UIScreen</span>.main.bounds)</span><br><span class="line">    window?.rootViewController = <span class="type">ViewController</span>()</span><br><span class="line">    window?.makeKeyAndVisible()</span><br><span class="line">    window?.windowScene = scene</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>原因：</p>
+<p>iOS 13 中 <strong>AppDelegaet</strong> 的职责发生了改变，在 iOS 13 之前，<strong>AppDelegate</strong> 负责处理 app 的生命周期以及 UI 生命周期；但 iOS 13 之后，<strong>AppDelegate</strong> 只负责处理 app 的生命周期，UI 周期则交由 <strong>Scene Delegate</strong> 负责处理。</p>
+<p><img src="/images/iOS13_1.png" alt></p>
+<p><img src="/images/iOS13_2.png" alt></p>
+<p>所以我们需要将UI相关的初始化都放到 <strong>Scene Delegate</strong> 中来完成，而其他非UI相关比如数据库之类的初始化则仍可以放在  <strong>AppDelegate</strong> 中完成。并且 UI 的管理周期也要放在 <strong>Secen Delegate </strong> 中。</p>
+<blockquote>
+<p>当然，我们也可以完全删掉 Scene 的相关代码，并把 info.plist 里关于 Scene 的也都删掉，改成和以前一样的形式，所以如果你的 app 将要适配 multiple windows，则采用新的 Scene Delegate；如果你的 app 还是和以前一样单进程单window，就都删掉 Scene 吧。</p>
+</blockquote>
+<h3 id="SwiftUI"><a href="#SwiftUI" class="headerlink" title="SwiftUI"></a>SwiftUI</h3><p>非常强大的界面构建方法，通过 SwiftUI 可以为所有苹果设备构建用户界面，SwiftUI 采用声明式的语法，我本人非常看好和期待这门技术，当然就目前国内厂商仍需兼容前几个 iOS 版本来说，只支持 iOS 13 之后的 SwiftUI 想要普及仍需个至少2年时间。对于这块，我想专门花时间来学习一下，并且把学习过程也通过博客写下来分享给大家，还请期待吧。</p>
 
       
     </div>
@@ -554,7 +583,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Dark-Mode"><span class="nav-number">1.</span> <span class="nav-text">Dark Mode</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#KVC"><span class="nav-number">2.</span> <span class="nav-text">KVC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#present"><span class="nav-number">3.</span> <span class="nav-text">present</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MPMoviePlayerController-的废弃"><span class="nav-number">4.</span> <span class="nav-text">MPMoviePlayerController 的废弃</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UIWebView-的废弃"><span class="nav-number">5.</span> <span class="nav-text">UIWebView 的废弃</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Device-Token"><span class="nav-number">6.</span> <span class="nav-text">Device Token</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Dark-Mode"><span class="nav-number">1.</span> <span class="nav-text">Dark Mode</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#KVC"><span class="nav-number">2.</span> <span class="nav-text">KVC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#present"><span class="nav-number">3.</span> <span class="nav-text">present</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MPMoviePlayerController-的废弃"><span class="nav-number">4.</span> <span class="nav-text">MPMoviePlayerController 的废弃</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UIWebView-的废弃"><span class="nav-number">5.</span> <span class="nav-text">UIWebView 的废弃</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Device-Token"><span class="nav-number">6.</span> <span class="nav-text">Device Token</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Scene-Delegate"><span class="nav-number">7.</span> <span class="nav-text">Scene Delegate</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SwiftUI"><span class="nav-number">8.</span> <span class="nav-text">SwiftUI</span></a></li></ol></div>
             
 
           </div>

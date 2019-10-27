@@ -105,7 +105,7 @@
 <meta property="og:description" content="RunLoop概念一般来讲，在一个线程中运行一个任务，任务运行结束后线程就会退出。但是在移动端，需要有个机制，能让主线程一直运行下去，并且能接受触摸事件，又能在空闲时休眠以节省资源，在iOS中，这个机制就叫做 RunLoop. iOS 提供了两个对象来处理 RunLoop，NSRunLoop 和 CFRunLoopRef。看命名也可以得知，CFRunLoopRef 是在 CoreFoundatio">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://danxl.com/images/RunLoop_0.png">
-<meta property="og:updated_time" content="2019-05-03T15:41:57.040Z">
+<meta property="og:updated_time" content="2019-10-27T13:37:26.748Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="iOS底层原理 - RunLoop">
 <meta name="twitter:description" content="RunLoop概念一般来讲，在一个线程中运行一个任务，任务运行结束后线程就会退出。但是在移动端，需要有个机制，能让主线程一直运行下去，并且能接受触摸事件，又能在空闲时休眠以节省资源，在iOS中，这个机制就叫做 RunLoop. iOS 提供了两个对象来处理 RunLoop，NSRunLoop 和 CFRunLoopRef。看命名也可以得知，CFRunLoopRef 是在 CoreFoundatio">
@@ -375,7 +375,6 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">_ZN2CA11Transaction17observer_callbackEP19__CFRunLoopObservermPv()</span><br><span class="line">    QuartzCore:CA::Transaction::observer_callback:</span><br><span class="line">        CA::Transaction::commit();</span><br><span class="line">            CA::Context::commit_transaction();</span><br><span class="line">                CA::Layer::layout_and_display_if_needed();</span><br><span class="line">                    CA::Layer::layout_if_needed();</span><br><span class="line">                        [CALayer layoutSublayers];</span><br><span class="line">                            [UIView layoutSubviews];</span><br><span class="line">                    CA::Layer::display_if_needed();</span><br><span class="line">                        [CALayer display];</span><br><span class="line">                            [UIView drawRect];</span><br></pre></td></tr></table></figure>
 <h4 id="定时器"><a href="#定时器" class="headerlink" title="定时器"></a>定时器</h4><p>上面也说到，<em>NSTimer</em> 其实就是 <em>CFRunLoopTimerRef</em>，当一个Timer注册到RunLoop中，RunLoop会为其在时间点重复的回调，但RunLoop不会非常准确的在时间点进行回调，有个属性叫 <em>Tolerance</em>， 超过这个 <em>Tolerance</em> 后，就会丢弃这次回调。</p>
 <h4 id="PerformSelecter"><a href="#PerformSelecter" class="headerlink" title="PerformSelecter"></a>PerformSelecter</h4><p>当调用 <code>performSelecter:afterDelay:</code> 后，其实就是在当前线程的RunLoop中注册了一个Timer并回调该Selector。如果当前线程没有RunLoop，则失效。</p>
-<p>#### </p>
 
       
     </div>
